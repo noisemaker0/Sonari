@@ -1,8 +1,11 @@
 {
   "scripts": {
-    "dev": "nodemon server.js",
-    "test": "jest --coverage --testPathPattern=tests",
-    "test:integration": "jest --testPathPattern=tests/integration",
-    "test:api": "jest --testPathPattern=tests/api"
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "lint": "eslint .",
+    "start": "react-native start",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
   }
 }
