@@ -19,9 +19,19 @@ app.get('/api/health', (req, res) => {
 });
 
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+const artistRoutes = require('./routes/artists');
+const songRoutes = require('./routes/songs');
+const playlistRoutes = require('./routes/playlists');
+const searchRoutes = require('./routes/search');
 const errorHandler = require('./middleware/errorHandler');
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/artists', artistRoutes);
+app.use('/api/songs', songRoutes);
+app.use('/api/playlists', playlistRoutes);
+app.use('/api/search', searchRoutes);
 app.use(errorHandler);
 
 // Connect to MongoDB and start server
