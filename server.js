@@ -18,6 +18,12 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Sonari backend is running.' });
 });
 
+const authRoutes = require('./routes/auth');
+const errorHandler = require('./middleware/errorHandler');
+
+app.use('/api/auth', authRoutes);
+app.use(errorHandler);
+
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
 connectDB().then(() => {
