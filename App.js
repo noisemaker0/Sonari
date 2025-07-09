@@ -1,20 +1,15 @@
-/* eslint-disable react/react-in-jsx-scope */
-import { StatusBar } from "expo-status-bar";
-import { LogBox } from "react-native";
-import { Provider } from "react-redux";
-import StackNavigator from "./StackNavigation";
-import store from "./store";
+import React from 'react';
+import { Provider } from 'react-redux';
+import store from './src/store';
+import AppNavigator from './src/navigation/AppNavigator';
+import Theme from './src/components/ui/Theme';
 
-//This is to ignore logs
-LogBox.ignoreLogs(["AsyncStorage has been extracted from react-native core and will be removed in a future release. It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. See https://github.com/react-native-async-storage/async-storage", 
-                    "Non-serializable values were found in the navigation state. Check:"
-                  ]);
+const App = () => (
+  <Provider store={store}>
+    <Theme>
+      <AppNavigator />
+    </Theme>
+  </Provider>
+);
 
-export default function App() {
-  return (
-    <Provider store={store}>
-      <StackNavigator />
-      <StatusBar style="auto" />
-    </Provider>
-  );
-}
+export default App;
