@@ -1,66 +1,100 @@
-# Sonari Backend
+# Sonari 🎵
 
-This is the backend API server for the Sonari music streaming platform.
+**Sonari** is a next-generation music streaming platform, built for artists and listeners. It features a modern backend API, a cross-platform mobile app, and a scalable architecture ready for future web and analytics expansion.
 
-## Tech Stack
-- Node.js
-- Express
-- MongoDB (Mongoose)
+---
 
-## Setup
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Create a `.env` file with your environment variables (see `.env.example`).
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+## 🚀 Features
+- **User & Artist Authentication** (JWT, refresh tokens)
+- **Audio Streaming & Upload** (MP3, WAV, FLAC)
+- **Playlists, Albums, Artists, Songs** (full CRUD)
+- **Search & Discovery** (multi-type, trending, suggestions)
+- **Mobile App** (React Native, Redux, Expo, Track Player)
+- **Secure File Uploads** (multer, validation)
+- **Comprehensive Testing** (Jest, Supertest, E2E flows)
+- **Modern UI/UX** (theming, onboarding, error states)
 
-## Scripts
-- `npm run dev` - Start server with nodemon
-- `npm test` - Run tests
+---
 
-## Folder Structure
-- `src/` - Main source code
-- `config/` - Configuration files
-- `middleware/` - Express middleware
-- `models/` - Mongoose models
-- `routes/` - API routes
-- `tests/` - Test suites
-- `utils/` - Utility functions
-- `services/` - Service logic
-- Copy `.env.example` to `.env` and update values as needed
+## 📦 Project Structure
+```
+sonari-project/
+├── backend/         # Node.js/Express/MongoDB API
+├── mobile/          # React Native mobile app
+├── web/             # (future) Web app
+├── shared/          # Shared code/utilities
+├── docs/            # Documentation
+├── scripts/         # DevOps and deployment scripts
+└── phase1.md        # Phase 1 summary & progress
+```
 
-# Sonari Mobile App
+---
 
-This is the React Native mobile app for the Sonari music streaming platform.
+## 🛠️ Getting Started
 
-## Tech Stack
-- React Native
-- Redux Toolkit
-- React Navigation
-- Axios
-- React Native Paper
+### Prerequisites
+- Node.js (v18+ recommended)
+- npm or yarn
+- MongoDB (local or Atlas)
+- Expo CLI (for mobile)
 
-## Setup
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Run the app on Android:
-   ```bash
-   npx react-native run-android
-   ```
-3. Run the app on iOS (Mac only):
-   ```bash
-   npx react-native run-ios
-   ```
+### Backend Setup
+```bash
+cd sonari-project/backend
+npm install
+cp .env.example .env   # Edit with your MongoDB URI and secrets
+npm run dev            # Start backend (dev mode)
+```
 
-## Folder Structure
-- `src/screens/` - App screens
-- `src/components/` - Reusable components
-- `src/services/` - API and service logic
-- `src/store/` - Redux store
-- `src/navigation/` - Navigation setup
+### Mobile App Setup
+```bash
+cd sonari-project/mobile/SonariApp
+npm install
+npm start             # Start Expo dev server
+```
+- Use Expo Go app or an emulator to run the mobile app.
+- Ensure your backend API is reachable from your device/emulator.
+
+---
+
+## 🧪 Testing
+- **Backend:**
+  ```bash
+  cd sonari-project/backend
+  npm test
+  ```
+- **Mobile:**
+  ```bash
+  cd sonari-project/mobile/SonariApp
+  npm test
+  ```
+- **Manual QA:**
+  - Register/login, search, play, upload, and manage playlists on the app.
+  - Use Postman/Insomnia for API endpoint testing.
+
+---
+
+## 📚 Documentation
+- See `phase1.md` for a full breakdown of features, sprints, and progress.
+- API docs: [docs/](docs/) (OpenAPI/Swagger coming soon)
+- For deployment, see `scripts/` and backend/mobile READMEs.
+
+---
+
+## 🤝 Contributing
+1. Fork the repo and create a feature branch.
+2. Follow code style and add tests for new features.
+3. Submit a pull request with a clear description.
+4. All contributions are reviewed and tested before merging.
+
+---
+
+## 🛡️ Security & License
+- MIT License
+- Please report vulnerabilities via issues or email.
+
+---
+
+## 👥 Credits
+- Built by the Sonari Team
+- Thanks to the open-source community!
