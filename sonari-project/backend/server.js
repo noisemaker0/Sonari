@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 
 const connectDB = require('./config/database');
@@ -13,6 +14,7 @@ const errorHandler = require('./middleware/errorHandler');
 const authRoutes = require('./routes/auth');
 const songsRoutes = require('./routes/songs');
 const searchRoutes = require('./routes/search');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -68,6 +70,10 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/songs', songsRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/upload', uploadRoutes);
+
+// Serve audio files statically
+app.use('/uploads/audio', express.static(path.join(__dirname, 'uploads/audio')));
 
 // 404 handler
 app.use('*', (req, res) => {

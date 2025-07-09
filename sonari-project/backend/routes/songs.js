@@ -6,6 +6,9 @@ const Song = require('../models/Song');
 const Artist = require('../models/Artist');
 const User = require('../models/User');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Song validation rules
 const songValidation = [
@@ -28,6 +31,36 @@ const songValidation = [
     .isBoolean()
     .withMessage('Explicit must be a boolean')
 ];
+
+// Multer config for song creation
+const songUploadDir = path.join(__dirname, '../uploads/audio');
+if (!fs.existsSync(songUploadDir)) {
+  fs.mkdirSync(songUploadDir, { recursive: true });
+}
+const songStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, songUploadDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext);
+    const unique = `${base}-${Date.now()}${ext}`;
+    cb(null, unique);
+  }
+});
+const songAudioMimeTypes = ['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac'];
+const songFileFilter = (req, file, cb) => {
+  if (songAudioMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only MP3, WAV, FLAC allowed.'));
+  }
+};
+const songUpload = multer({
+  storage: songStorage,
+  fileFilter: songFileFilter,
+  limits: { fileSize: 20 * 1024 * 1024 }
+});
 
 // @route   GET /api/songs
 // @desc    Get all songs with pagination and filters
@@ -145,53 +178,42 @@ router.get('/:id', optionalAuth, async (req, res) => {
 });
 
 // @route   POST /api/songs
-// @desc    Create a new song
+// @desc    Create a new song (with audio upload)
 // @access  Private (Artist only)
-router.post('/', auth, songValidation, validate, async (req, res) => {
+router.post('/', auth, songUpload.single('audio'), songValidation, validate, async (req, res) => {
   try {
-    // Check if user is an artist
     if (!req.user.isArtist) {
-      return res.status(403).json({
-        success: false,
-        message: 'Only artists can create songs'
-      });
+      return res.status(403).json({ success: false, message: 'Only artists can create songs' });
     }
-
     const artist = await Artist.findOne({ user: req.user._id });
     if (!artist) {
-      return res.status(403).json({
-        success: false,
-        message: 'Artist profile not found'
-      });
+      return res.status(403).json({ success: false, message: 'Artist profile not found' });
     }
-
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No audio file uploaded' });
+    }
+    const audioFileUrl = `/uploads/audio/${req.file.filename}`;
     const songData = {
       ...req.body,
-      artist: artist._id
+      artist: artist._id,
+      audioFile: audioFileUrl,
+      audioMetadata: {
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        originalname: req.file.originalname
+      }
     };
-
     const song = new Song(songData);
     await song.save();
-
-    // Add song to artist's songs array
     artist.songs.push(song._id);
     await artist.save();
-
     const populatedSong = await Song.findById(song._id)
       .populate('artist', 'artistName profilePicture')
       .populate('album', 'title coverArt');
-
-    res.status(201).json({
-      success: true,
-      message: 'Song created successfully',
-      data: { song: populatedSong }
-    });
+    res.status(201).json({ success: true, message: 'Song created successfully', data: { song: populatedSong } });
   } catch (error) {
     console.error('Create song error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while creating song'
-    });
+    res.status(500).json({ success: false, message: 'Server error while creating song' });
   }
 });
 
