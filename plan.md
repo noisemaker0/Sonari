@@ -5,7 +5,109 @@ Sonari is a full-featured music streaming platform with web (React + Tailwind CS
 
 ---
 
-## 🟦 Frontend (Web & Mobile)
+## �️ Sonari Production Screens Breakdown
+
+### ✅ Full Screens (Main App Views)
+
+#### 🔐 Onboarding
+1. Splash Screen
+2. Role Selection (Listener / Artist)
+3. Sign Up – Listener
+4. Sign Up – Artist
+5. Login – Listener/Artist
+6. Forgot Password
+7. Email Verification
+8. Blocked Content / Warning Screen
+
+#### 🎧 Listener Core
+9. Home (Discovery feed + trending)
+10. Search (Genre, Artist, Mood, Region)
+11. Library (Saved songs, albums, playlists)
+12. Wallet (Coin balance, top-up)
+13. Premium Plans Page
+14. Coin Purchase Page
+15. Subscription Management
+16. Podcast Page
+17. Album Page
+18. Playlist View (Public/Private)
+19. Artist Profile View
+20. Now Playing Full View
+21. Wrapped Experience Page
+22. Weekly AI Discovery Page
+23. Manage Devices (optional)
+24. Settings – General
+25. Settings – Profile
+26. Settings – Account (Change Password, Delete, Language/Region)
+27. Notification Preferences
+28. Manage Family Profiles
+29. Add Family Profile
+30. Terms of Service
+31. Privacy Policy
+32. 404 Not Found
+33. App Update Screen (optional forced update)
+
+#### 🧑‍🎤 Artist-Specific
+34. Upload Music / Podcast
+35. Edit Uploaded Content
+36. Artist Content Library
+37. Set Subscription Price
+38. Tip Analytics
+39. Subscription Analytics
+40. Earnings Dashboard
+41. View Subscribers
+
+#### 👑 Admin Panel (Web Only)
+42. Admin Login
+43. User Management
+44. Artist Management
+45. Upload Moderation
+46. Coin Economy Controls
+47. Promotion Engine (create/edit deals)
+48. Analytics Dashboard
+49. Email Blasts Tool
+50. Notification Push Tool
+51. Payout Manager
+52. Country-Based Pricing Controls
+53. Feature Toggle Control Center
+
+---
+
+### 🌓 Half-Screens / Panels / Drawers
+These typically slide from the bottom or side (for web/mobile):
+1. Add to Playlist Drawer
+2. Playback Queue Panel
+3. Mini Player
+4. Search Filter Panel
+5. Coin Top-Up Payment Drawer
+6. Manage Subscription Drawer
+7. Add New Profile Panel (Family plan)
+8. Choose Region/Language
+9. Manage Email Notifications
+10. Listener/Artist Switch Panel
+
+---
+
+### 💬 Popups / Modals / Toasts
+These are transient or interactive overlays:
+1. Delete Confirmation (e.g., Playlist, Upload, Account)
+2. Unsubscribe Confirmation
+3. Confirm Tip Popup
+4. Confirm Subscription Popup
+5. Report Content Modal
+6. Tip Successful Toast
+7. Subscription Successful Toast
+8. Payment Success / Failure
+9. General Error Message
+10. Logout Confirmation
+11. Email Verification Reminder
+12. App Version Warning
+13. Invite to Family Plan
+14. Upload Limit Reached
+15. Content Flagged / Rejected Modal
+
+---
+
+## �🟦 Frontend (Web & Mobile)
 
 ### Shared Principles
 - **TypeScript** for all code
