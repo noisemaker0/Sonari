@@ -34,7 +34,7 @@ const playlistSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPlaylists.pending, (state) => { state.loading = true; })
+      .addCase(fetchPlaylists.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(fetchPlaylists.fulfilled, (state, action) => {
         state.loading = false;
         state.playlists = action.payload;
@@ -43,14 +43,26 @@ const playlistSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      .addCase(createPlaylist.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(createPlaylist.fulfilled, (state, action) => {
+        state.loading = false;
         state.playlists.push(action.payload);
       })
+      .addCase(createPlaylist.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(addSongToPlaylist.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(addSongToPlaylist.fulfilled, (state, action) => {
+        state.loading = false;
         const playlist = state.playlists.find(p => p.id === action.payload.playlistId);
         if (playlist) {
           playlist.songs.push(action.payload.song);
         }
+      })
+      .addCase(addSongToPlaylist.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
