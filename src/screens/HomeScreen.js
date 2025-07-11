@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Button } from 'react-native';
 import AudioPlayer from '../components/AudioPlayer';
 
 const sampleTrack = {
@@ -9,9 +9,10 @@ const sampleTrack = {
   artist: 'Sample Artist',
 };
 
-const HomeScreen = () => (
+const HomeScreen = ({ navigation }) => (
   <View style={styles.container}>
     <AudioPlayer track={sampleTrack} />
+    <Button title="Upload Song" onPress={() => navigation.navigate('UploadSong')} />
   </View>
 );
 
