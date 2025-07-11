@@ -8,6 +8,12 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
   },
+  "workspaces": [
+    "web",
+    "mobile",
+    "backend",
+    "shared"
+  ],
   "dependencies": {
     "music-metadata": "^11.6.0"
   }
