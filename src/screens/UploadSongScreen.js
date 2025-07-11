@@ -2,20 +2,41 @@ import React, { useState } from 'react';
 import { View, Text, Button, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 
+const BACKEND_URL = 'http://localhost:5000/api/upload/audio';
+
 const UploadSongScreen = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState('');
 
+  const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+  const ALLOWED_TYPES = [
+    'audio/mpeg',
+    'audio/wav',
+    'audio/x-wav',
+    'audio/flac',
+    'audio/x-flac',
+  ];
+
   const pickFile = async () => {
     setMessage('');
     const result = await DocumentPicker.getDocumentAsync({
-      type: ['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac'],
+      type: ALLOWED_TYPES,
       copyToCacheDirectory: true,
       multiple: false,
     });
     if (result.type === 'success') {
+      if (!ALLOWED_TYPES.includes(result.mimeType)) {
+        setFile(null);
+        setMessage('Invalid file type. Only MP3, WAV, FLAC allowed.');
+        return;
+      }
+      if (result.size && result.size > MAX_FILE_SIZE) {
+        setFile(null);
+        setMessage('File is too large. Max size is 20MB.');
+        return;
+      }
       setFile(result);
     } else {
       setFile(null);
@@ -40,7 +61,7 @@ const UploadSongScreen = () => {
       });
       // Use XMLHttpRequest for progress
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://YOUR_BACKEND_URL/api/upload/audio'); // TODO: Replace with actual backend URL
+      xhr.open('POST', BACKEND_URL);
       xhr.setRequestHeader('Accept', 'application/json');
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -73,7 +94,11 @@ const UploadSongScreen = () => {
       <TouchableOpacity style={styles.button} onPress={pickFile} disabled={uploading}>
         <Text style={styles.buttonText}>Pick Audio File</Text>
       </TouchableOpacity>
-      {file && <Text style={styles.fileName}>Selected: {file.name}</Text>}
+      {file && (
+        <Text style={styles.fileName}>
+          Selected: {file.name} ({file.size ? (file.size / (1024 * 1024)).toFixed(2) : '?'} MB)
+        </Text>
+      )}
       <TouchableOpacity style={styles.button} onPress={handleUpload} disabled={uploading || !file}>
         <Text style={styles.buttonText}>{uploading ? 'Uploading...' : 'Upload'}</Text>
       </TouchableOpacity>

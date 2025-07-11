@@ -9,10 +9,15 @@ const sampleTrack = {
   artist: 'Sample Artist',
 };
 
+// Mock user object (replace with real user context or prop in production)
+const user = { isArtist: true };
+
 const HomeScreen = ({ navigation }) => (
   <View style={styles.container}>
     <AudioPlayer track={sampleTrack} />
-    <Button title="Upload Song" onPress={() => navigation.navigate('UploadSong')} />
+    {user.isArtist && (
+      <Button title="Upload Song" onPress={() => navigation.navigate('UploadSong')} />
+    )}
   </View>
 );
 
