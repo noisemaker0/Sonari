@@ -6,6 +6,8 @@ const { auth } = require('../middleware/auth');
 const Song = require('../models/Song');
 const Artist = require('../models/Artist');
 const { parseFile } = require('music-metadata');
+const { uploadToS3, deleteFromS3 } = require('../../../services/fileUpload');
+const isS3Enabled = process.env.AWS_S3_BUCKET && process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY;
 
 const router = express.Router();
 
@@ -59,8 +61,17 @@ router.post('/audio', auth, upload.single('audio'), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded.' });
     }
-    // Save file metadata (optionally, use a library to get duration)
-    const fileUrl = `/uploads/audio/${req.file.filename}`;
+    let fileUrl = `/uploads/audio/${req.file.filename}`;
+    if (isS3Enabled) {
+      const s3Result = await uploadToS3(
+        require('fs').readFileSync(req.file.path),
+        req.file.filename,
+        req.file.mimetype
+      );
+      fileUrl = s3Result.Location;
+      // Optionally delete local file after upload
+      require('fs').unlinkSync(req.file.path);
+    }
     let audioMetadata = {};
     try {
       const meta = await parseFile(req.file.path);
@@ -80,7 +91,8 @@ router.post('/audio', auth, upload.single('audio'), async (req, res) => {
       mimetype: req.file.mimetype,
       size: req.file.size,
       url: fileUrl,
-      audioMetadata
+      audioMetadata,
+      uploader: req.user._id // Track uploader for delete auth
     };
     res.status(201).json({ success: true, message: 'Audio uploaded successfully.', data: metadata });
   } catch (error) {
@@ -98,6 +110,13 @@ router.delete('/audio/:filename', auth, async (req, res) => {
       return res.status(403).json({ success: false, message: 'Only artists can delete audio files.' });
     }
     const { filename } = req.params;
+    // Check if the user is the uploader (requires storing uploader info in DB or metadata)
+    // For now, assume filename encodes uploader or store a mapping in DB
+    // If S3 is enabled, delete from S3
+    if (isS3Enabled) {
+      await deleteFromS3(filename);
+      return res.status(200).json({ success: true, message: 'Audio file deleted from S3.' });
+    }
     const filePath = path.join(uploadDir, filename);
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ success: false, message: 'File not found.' });

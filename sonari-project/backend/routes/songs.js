@@ -9,6 +9,8 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { deleteFromS3 } = require('../../../services/fileUpload');
+const isS3Enabled = process.env.AWS_S3_BUCKET && process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY;
 
 // Song validation rules
 const songValidation = [
@@ -288,6 +290,16 @@ router.delete('/:id', auth, async (req, res) => {
     const artist = await Artist.findById(song.artist._id);
     artist.songs = artist.songs.filter(id => id.toString() !== song._id.toString());
     await artist.save();
+
+    // Delete audio file if S3 is enabled
+    if (isS3Enabled) {
+      await deleteFromS3(song.audioFile);
+    } else {
+      const localPath = path.join(__dirname, `../../${song.audioFile}`);
+      if (fs.existsSync(localPath)) {
+        fs.unlinkSync(localPath);
+      }
+    }
 
     res.json({
       success: true,

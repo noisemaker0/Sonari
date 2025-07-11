@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Button, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput, Alert } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 
 const BACKEND_URL = 'http://localhost:5000/api/upload/audio';
@@ -9,6 +9,9 @@ const UploadSongScreen = () => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState('');
+  const [title, setTitle] = useState('');
+  const [genre, setGenre] = useState('');
+  const [explicit, setExplicit] = useState(false);
 
   const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
   const ALLOWED_TYPES = [
@@ -49,6 +52,10 @@ const UploadSongScreen = () => {
       setMessage('Please select an audio file.');
       return;
     }
+    if (!title) {
+      setMessage('Please enter a song title.');
+      return;
+    }
     setUploading(true);
     setProgress(0);
     setMessage('');
@@ -69,12 +76,25 @@ const UploadSongScreen = () => {
           setProgress(percent);
         }
       };
-      xhr.onload = () => {
+      xhr.onload = async () => {
         setUploading(false);
         if (xhr.status === 201) {
-          setMessage('Upload successful!');
+          setFile(null);
+          setProgress(0);
+          try {
+            const resp = JSON.parse(xhr.responseText);
+            setMessage('Upload successful! File URL: ' + (resp.data?.url || ''));
+            Alert.alert('Success', 'Song uploaded successfully!');
+          } catch (e) {
+            setMessage('Upload successful!');
+          }
         } else {
-          setMessage('Upload failed: ' + xhr.responseText);
+          let errMsg = 'Upload failed';
+          try {
+            const resp = JSON.parse(xhr.responseText);
+            errMsg = resp.message || errMsg;
+          } catch {}
+          setMessage(errMsg);
         }
       };
       xhr.onerror = () => {
@@ -91,6 +111,24 @@ const UploadSongScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upload Song</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Song Title"
+        value={title}
+        onChangeText={setTitle}
+        editable={!uploading}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Genre"
+        value={genre}
+        onChangeText={setGenre}
+        editable={!uploading}
+      />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+        <Text>Explicit:</Text>
+        <Button title={explicit ? 'Yes' : 'No'} onPress={() => setExplicit(!explicit)} disabled={uploading} />
+      </View>
       <TouchableOpacity style={styles.button} onPress={pickFile} disabled={uploading}>
         <Text style={styles.buttonText}>Pick Audio File</Text>
       </TouchableOpacity>
@@ -104,8 +142,10 @@ const UploadSongScreen = () => {
       </TouchableOpacity>
       {uploading && (
         <View style={styles.progressContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.progressText}>Uploading: {progress}%</Text>
+          <View style={{ flex: 1, height: 10, backgroundColor: '#eee', borderRadius: 5 }}>
+            <View style={{ width: `${progress}%`, height: 10, backgroundColor: '#007AFF', borderRadius: 5 }} />
+          </View>
+          <Text style={styles.progressText}>{progress}%</Text>
         </View>
       )}
       {message ? <Text style={styles.message}>{message}</Text> : null}
@@ -122,6 +162,15 @@ const styles = StyleSheet.create({
   progressContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 16 },
   progressText: { marginLeft: 10, fontSize: 16 },
   message: { marginTop: 20, fontSize: 16, color: '#007AFF', textAlign: 'center' },
+  input: {
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    width: '100%',
+  },
 });
 
 export default UploadSongScreen;
